@@ -39,6 +39,7 @@ public class SketchController implements View.OnTouchListener {
                         if(model.lineSelection(model.lines,new PointF(motionEvent.getX(),motionEvent.getY()))){
                             currentState = State.SELECTING;
                         }
+                        break;
                 }
 
 
@@ -46,6 +47,7 @@ public class SketchController implements View.OnTouchListener {
                     case MotionEvent.ACTION_MOVE:
                         //add dots to view
                         model.addDot(motionEvent.getX(),motionEvent.getY());
+                        break;
                 }
 
                 switch (motionEvent.getAction()) {
@@ -58,36 +60,44 @@ public class SketchController implements View.OnTouchListener {
                         }
                         //else just clear points
                         model.points.clear();
+                        break;
                 }
+                break;
 
             case SELECTING:
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        if (model.selectedLine != null) {
 
-                            //if the touchdown is on the selected line start handle - switch to the ENDPOINTMOVE state
-                            if (model.selectedLine.Start.x >= motionEvent.getX() + 10 && model.selectedLine.Start.x >= motionEvent.getX() - 10 &&
-                                    model.selectedLine.Start.y >= motionEvent.getX() + 10 && model.selectedLine.Start.y >= motionEvent.getX() - 10) {
-                                currentState = State.ENDPOINTMOVE;
-                            }
-
-                            //if the touchdown is on the selected line end handle - switch to the ENDPOINTMOVE state
-                            else if (model.selectedLine.End.x >= motionEvent.getX() + 10 && model.selectedLine.End.x >= motionEvent.getX() - 10 &&
-                                    model.selectedLine.End.y >= motionEvent.getX() + 10 && model.selectedLine.End.y >= motionEvent.getX() - 10) {
-                                currentState = State.ENDPOINTMOVE;
-                            }
+//                            //if the touchdown is on the selected line start handle - switch to the ENDPOINTMOVE state
+//                            if (model.selectedLine.Start.x >= motionEvent.getX() + 10 && model.selectedLine.Start.x >= motionEvent.getX() - 10 &&
+//                                    model.selectedLine.Start.y >= motionEvent.getX() + 10 && model.selectedLine.Start.y >= motionEvent.getX() - 10) {
+//                                System.out.println("Touched endpoint");
+////                                currentState = State.ENDPOINTMOVE;
+//                            }
+//
+//                            //if the touchdown is on the selected line end handle - switch to the ENDPOINTMOVE state
+//                            if (model.selectedLine.End.x >= motionEvent.getX() + 10 && model.selectedLine.End.x >= motionEvent.getX() - 10 &&
+//                                    model.selectedLine.End.y >= motionEvent.getX() + 10 && model.selectedLine.End.y >= motionEvent.getX() - 10) {
+//                                System.out.println("Touched endpoint");
+////                                currentState = State.ENDPOINTMOVE;
+//                            }
 
                             //if the touchdown is on the selected line - switch to the DRAGGING state
-                            else if (model.selectedLine.distanceFromLine(motionEvent.getX(), motionEvent.getY()) > 0.4) {
+                            if (Math.abs(model.selectedLine.distanceFromLine(motionEvent.getX(), motionEvent.getY())) < 0.05) {
+                                System.out.println("Touched selected line");
                                 currentState = State.DRAGGING;
                             }
 
-                            //we can assume the touch is on the background p switch to the READY state
+                            //we can assume the touch is on the background or an un-selected line - clear selection and switch to the READY state
                             else {
-                                currentState = State.READY;
+                                System.out.println("Touched bg or non selected line");
+                                        model.clearSelection();
+                                        currentState = State.READY;
+                                        break;
                             }
+                            break;
                         }
-                }
+                        break;
 
             case DRAGGING:
 
