@@ -14,7 +14,7 @@ public class SketchController implements View.OnTouchListener {
 
     }
 
-    private enum State {READY , SELECTING, DRAGGING, ENDPOINTMOVE}
+    private enum State {READY, DRAWING, SELECTING, DRAGGING, ENDPOINTMOVE}
 
     private State currentState = State.READY;
 
@@ -34,15 +34,20 @@ public class SketchController implements View.OnTouchListener {
             case READY:
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        iModel.addStart(new PointF(motionEvent.getX(),motionEvent.getY()));
 
+                        //if we've touched down on an existing line - select it and switch to SELECTING STATE
                         if(model.lineSelection(model.lines,new PointF(motionEvent.getX(),motionEvent.getY()))){
                             currentState = State.SELECTING;
                         }
+                        else{
+                            iModel.addStart(new PointF(motionEvent.getX(),motionEvent.getY()));
+                            currentState = State.DRAWING;
+                        }
                         break;
                 }
+                break;
 
-
+            case DRAWING:
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_MOVE:
                         //add dots to view
@@ -60,6 +65,7 @@ public class SketchController implements View.OnTouchListener {
                         }
                         //else just clear points
                         model.points.clear();
+                        currentState = State.READY;
                         break;
                 }
                 break;

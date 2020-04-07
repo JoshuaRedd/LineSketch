@@ -47,6 +47,7 @@ public class SketchModel {
     public void clearSelection(){
         selectedLine = null;
         notifySubscribers();
+        return;
     };
 
     public void addSubscribers(SketchListener subscriber) { subscribers.add(subscriber);}
