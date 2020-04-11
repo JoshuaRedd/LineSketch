@@ -39,4 +39,8 @@ public class Line {
         }
         return true;
     }
+
+    public void translocateLine(int x, int y){
+
+    };
 }
