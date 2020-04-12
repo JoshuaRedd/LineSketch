@@ -10,7 +10,9 @@ public class SketchController implements View.OnTouchListener {
     InteractionModel iModel;
     Line Line;
     boolean startPoint;
-    private int normX, normY;
+    private float normX, normY;
+    private float normDX, normDY;
+    private float prevNormX, prevNormY;
 
     public SketchController(){
 
@@ -44,6 +46,10 @@ public class SketchController implements View.OnTouchListener {
         startPoint = false;
         normX = (int)motionEvent.getX();
         normY = (int)motionEvent.getY();
+        normDX = normX - prevNormX;
+        normDY = normY - prevNormY;
+        prevNormX = normX;
+        prevNormY = normY;
 
         switch (currentState) {
             case READY:
@@ -129,9 +135,16 @@ public class SketchController implements View.OnTouchListener {
                         break;
 
             case DRAGGING:
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_MOVE:
+                        iModel.translateLine(normDX,normDY);
+                        break;
+                }
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_UP:
+                        iModel.updateLines();
                         setLines();
+                        setSelected();
                         currentState = State.SELECTING;
                         break;
                 }

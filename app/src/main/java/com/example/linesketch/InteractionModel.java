@@ -47,14 +47,22 @@ public class InteractionModel {
         return false;
     }
 
-    public void startMove(int x, int y){
+    public void translateLine(float x, float y){
+        selectedLine.Start.x += x;
+        selectedLine.Start.y += y;
+        selectedLine.End.x += x;
+        selectedLine.End.y += y;
+        notifySubscribers();
+    }
+
+    public void startMove(float x, float y){
         System.out.println("start");
         selectedLine.Start.x = x;
         selectedLine.Start.y = y;
         notifySubscribers();
     };
 
-    public void endMove(int x, int y){
+    public void endMove(float x, float y){
         System.out.println("end");
         selectedLine.End.x = x;
         selectedLine.End.y = y;
