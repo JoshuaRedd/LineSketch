@@ -59,6 +59,20 @@ public class InteractionModel {
         System.out.println("start");
         selectedLine.Start.x = x;
         selectedLine.Start.y = y;
+
+        //snap to code
+        for(int i=0;i<lines.size();i++){
+            if(x <= lines.get(i).Start.x + 20 && x>= lines.get(i).Start.x -20 &&
+                    y <= lines.get(i).Start.y +20 & y >= lines.get(i).Start.y -20){
+                selectedLine.Start.x = lines.get(i).Start.x;
+                selectedLine.Start.y = lines.get(i).Start.y;
+            }
+            if(x <= lines.get(i).End.x + 20 && x>= lines.get(i).End.x -20 &&
+                    y <= lines.get(i).End.y +20 & y >= lines.get(i).End.y -20){
+                selectedLine.Start.x = lines.get(i).End.x;
+                selectedLine.Start.y = lines.get(i).End.y;
+            }
+        }
         notifySubscribers();
     };
 
@@ -66,6 +80,20 @@ public class InteractionModel {
         System.out.println("end");
         selectedLine.End.x = x;
         selectedLine.End.y = y;
+
+        //snap to code
+        for(int i=0;i<lines.size();i++){
+            if(x <= lines.get(i).Start.x + 20 && x>= lines.get(i).Start.x -20 &&
+            y <= lines.get(i).Start.y +20 & y >= lines.get(i).Start.y -20){
+                selectedLine.End.x = lines.get(i).Start.x;
+                selectedLine.End.y = lines.get(i).Start.y;
+            }
+            if(x <= lines.get(i).End.x + 20 && x>= lines.get(i).End.x -20 &&
+                    y <= lines.get(i).End.y +20 & y >= lines.get(i).End.y -20){
+                selectedLine.End.x = lines.get(i).End.x;
+                selectedLine.End.y = lines.get(i).End.y;
+            }
+        }
         notifySubscribers();
     };
 
