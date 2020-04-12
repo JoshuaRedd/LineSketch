@@ -99,6 +99,7 @@ public class SketchController implements View.OnTouchListener {
                                 System.out.println("Touched start endpoint");
                                 startPoint = true;
                                 currentState = State.STARTPOINTMOVE;
+                                break;
                             }
 
                             //if the touchdown is on the selected line end handle - switch to the ENDPOINTMOVE state
@@ -112,7 +113,7 @@ public class SketchController implements View.OnTouchListener {
                             //if the touchdown is on the selected line - switch to the DRAGGING state
                             if (Math.abs(iModel.selectedLine.distanceFromLine(motionEvent.getX(), motionEvent.getY())) < 0.05) {
                                 System.out.println("Touched selected line");
-//                                currentState = State.DRAGGING;
+                                currentState = State.DRAGGING;
                             }
 
                             //we can assume the touch is on the background or an un-selected line - clear selection and switch to the READY state
@@ -128,6 +129,13 @@ public class SketchController implements View.OnTouchListener {
                         break;
 
             case DRAGGING:
+                switch (motionEvent.getAction()){
+                    case MotionEvent.ACTION_UP:
+                        setLines();
+                        currentState = State.SELECTING;
+                        break;
+                }
+                break;
 
             case STARTPOINTMOVE:
                 switch (motionEvent.getAction()) {
@@ -137,7 +145,9 @@ public class SketchController implements View.OnTouchListener {
                 }
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_UP:
+                        iModel.updateLines();
                         setLines();
+                        setSelected();
                         currentState = State.SELECTING;
                         break;
                 }
@@ -151,7 +161,9 @@ public class SketchController implements View.OnTouchListener {
                 }
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_UP:
+                        iModel.updateLines();
                         setLines();
+                        setSelected();
                         currentState = State.SELECTING;
                         break;
                 }

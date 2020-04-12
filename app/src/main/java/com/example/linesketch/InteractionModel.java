@@ -11,6 +11,7 @@ public class InteractionModel {
     ArrayList<SketchListener> subscribers;
     ArrayList<Line> lines;
     Line selectedLine;
+    int originalPosition;
     PointF start;
     PointF end;
 
@@ -19,6 +20,7 @@ public class InteractionModel {
         subscribers = new ArrayList<>();
         lines = new ArrayList<>();
         selectedLine = null;
+        originalPosition = 0;
         start = new PointF();
         end = new PointF();
     };
@@ -37,6 +39,7 @@ public class InteractionModel {
         for(int i=0;i<lines.size();i++){
             if (Math.abs(lines.get(i).distanceFromLine(point.x, point.y)) < 0.05){
                 selectedLine = this.lines.get(i);
+                originalPosition = i;
                 notifySubscribers();
                 return true;
             }
@@ -57,6 +60,12 @@ public class InteractionModel {
         selectedLine.End.y = y;
         notifySubscribers();
     };
+
+    public void updateLines() {
+        lines.set(originalPosition,new Line(selectedLine.Start,selectedLine.End));
+        selectedLine = lines.get(originalPosition);
+        notifySubscribers();
+    }
 
     public void clearSelection(){
         selectedLine = null;
