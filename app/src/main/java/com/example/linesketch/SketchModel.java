@@ -11,14 +11,12 @@ public class SketchModel {
     ArrayList<SketchListener> subscribers;
     ArrayList<Line> lines;
     Line selectedLine;
-    int reference;
 
     public SketchModel(){
         points = new ArrayList<>();
         subscribers = new ArrayList<>();
         lines = new ArrayList<>();
         selectedLine = null;
-        reference = 0;
     };
 
     public void addDot(float x, float y) {
@@ -34,8 +32,7 @@ public class SketchModel {
     public boolean lineSelection(ArrayList<Line> lines,PointF point) {
         for(int i=0;i<lines.size();i++){
             if (Math.abs(lines.get(i).distanceFromLine(point.x, point.y)) < 0.05){
-                selectedLine = lines.get(i);
-                this.reference = i;
+                selectedLine = this.lines.get(i);
                 notifySubscribers();
                 return true;
             }

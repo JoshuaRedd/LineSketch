@@ -16,7 +16,6 @@ public class SketchMainActivity extends AppCompatActivity {
     private InteractionModel iModel;
     private SketchView sketchView;
     private SketchController controller;
-    private Line line;
     private SeekBar rotateBar;
     private SeekBar scaleBar;
 

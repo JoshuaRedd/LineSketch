@@ -28,7 +28,15 @@ public class SketchController implements View.OnTouchListener {
         iModel = im;
     }
 
+    public void setLines() {
+        model.lines = iModel.lines;
+    }
 
+    public void setPoints() {
+        model.points = iModel.points;
+    }
+
+    public void setSelected() {model.selectedLine = iModel.selectedLine;}
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -43,11 +51,13 @@ public class SketchController implements View.OnTouchListener {
                     case MotionEvent.ACTION_DOWN:
 
                         //if we've touched down on an existing line - select it and switch to SELECTING STATE
-                        if(model.lineSelection(model.lines,new PointF(motionEvent.getX(),motionEvent.getY()))){
+                        if(iModel.lineSelection(iModel.lines,new PointF(motionEvent.getX(),motionEvent.getY()))){
+                            setSelected();
                             currentState = State.SELECTING;
                         }
                         else{
                             iModel.addStart(new PointF(motionEvent.getX(),motionEvent.getY()));
+                            setPoints();
                             currentState = State.DRAWING;
                         }
                         break;
@@ -58,7 +68,8 @@ public class SketchController implements View.OnTouchListener {
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_MOVE:
                         //add dots to view
-                        model.addDot(motionEvent.getX(),motionEvent.getY());
+                        iModel.addDot(motionEvent.getX(),motionEvent.getY());
+                        setPoints();
                         break;
                 }
 
@@ -67,11 +78,12 @@ public class SketchController implements View.OnTouchListener {
                         //store coordinates of last point
                         iModel.addLast(new PointF(motionEvent.getX(),motionEvent.getY()));
                         //if points create valid line draw the line
-                        if((new Line(iModel.start,iModel.end).isValidLine(model.points))){
-                            model.addLine(iModel.start,iModel.end);
+                        if((new Line(iModel.start,iModel.end).isValidLine(iModel.points))){
+                            setLines();
+                            iModel.addLine(iModel.start,iModel.end);
                         }
                         //else just clear points
-                        model.points.clear();
+                        iModel.points.clear();
                         currentState = State.READY;
                         break;
                 }
@@ -82,23 +94,23 @@ public class SketchController implements View.OnTouchListener {
                     case MotionEvent.ACTION_DOWN:
 
                             //if the touchdown is on the selected line start handle - switch to the ENDPOINTMOVE state
-                            if (model.selectedLine.Start.x <= motionEvent.getX() +20 && model.selectedLine.Start.x >= motionEvent.getX() -20 &&
-                                    model.selectedLine.Start.y <= motionEvent.getY() +20 && model.selectedLine.Start.y >= motionEvent.getY()-20) {
+                            if (iModel.selectedLine.Start.x <= motionEvent.getX() +20 && iModel.selectedLine.Start.x >= motionEvent.getX() -20 &&
+                                    iModel.selectedLine.Start.y <= motionEvent.getY() +20 && iModel.selectedLine.Start.y >= motionEvent.getY()-20) {
                                 System.out.println("Touched start endpoint");
                                 startPoint = true;
                                 currentState = State.STARTPOINTMOVE;
                             }
 
                             //if the touchdown is on the selected line end handle - switch to the ENDPOINTMOVE state
-                            if (model.selectedLine.End.x <= motionEvent.getX() + 20 && model.selectedLine.End.x >= motionEvent.getX() - 20 &&
-                                    model.selectedLine.End.y <= motionEvent.getY() + 20 && model.selectedLine.End.y >= motionEvent.getY() - 20) {
+                            if (iModel.selectedLine.End.x <= motionEvent.getX() + 20 && iModel.selectedLine.End.x >= motionEvent.getX() - 20 &&
+                                    iModel.selectedLine.End.y <= motionEvent.getY() + 20 && iModel.selectedLine.End.y >= motionEvent.getY() - 20) {
                                 System.out.println("Touched end endpoint");
                                 currentState = State.ENDPOINTMOVE;
                                 break;
                             }
 
                             //if the touchdown is on the selected line - switch to the DRAGGING state
-                            if (Math.abs(model.selectedLine.distanceFromLine(motionEvent.getX(), motionEvent.getY())) < 0.05) {
+                            if (Math.abs(iModel.selectedLine.distanceFromLine(motionEvent.getX(), motionEvent.getY())) < 0.05) {
                                 System.out.println("Touched selected line");
 //                                currentState = State.DRAGGING;
                             }
@@ -106,7 +118,8 @@ public class SketchController implements View.OnTouchListener {
                             //we can assume the touch is on the background or an un-selected line - clear selection and switch to the READY state
                             else {
                                 System.out.println("Touched bg or non selected line");
-                                        model.clearSelection();
+                                        iModel.clearSelection();
+                                        setSelected();
                                         currentState = State.READY;
                                         break;
                             }
@@ -119,11 +132,12 @@ public class SketchController implements View.OnTouchListener {
             case STARTPOINTMOVE:
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_MOVE:
-                        model.startMove(normX,normY);
+                        iModel.startMove(normX,normY);
                         break;
                 }
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_UP:
+                        setLines();
                         currentState = State.SELECTING;
                         break;
                 }
@@ -132,11 +146,12 @@ public class SketchController implements View.OnTouchListener {
             case ENDPOINTMOVE:
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_MOVE:
-                        model.endMove(normX,normY);
+                        iModel.endMove(normX,normY);
                         break;
                 }
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_UP:
+                        setLines();
                         currentState = State.SELECTING;
                         break;
                 }
